@@ -1,6 +1,6 @@
 import cifar10, cifar10_input
-import tensorflow as tf 
-import numpy as np 
+import tensorflow as tf
+import numpy as np
 import time
 
 # setting
@@ -34,7 +34,7 @@ pool1 = tf.nn.max_pool(conv1, ksize=[1,3,3,1], strides=[1,2,2,1], padding='SAME'
 norm1 = tf.nn.lrn(pool1, 4, bias=1.0, alpha=0.001/9.0, beta=0.75)
 
 # conv2
-weight2 = variable_with_weight_loss([5,5,64,64], stddev=5r-2, w1=0.0)
+weight2 = variable_with_weight_loss([5,5,64,64], stddev=5e-2, w1=0.0)
 bias2 = tf.Variable(tf.constants(0.1, [64]))
 kernel2 = tf.nn.conv2d(norm1, weight2,[1,1,1,1], padding='SAME')
 conv2 = tf.nn.relu(tf.nn.bias_add(kernel2, bias2))
@@ -44,7 +44,7 @@ pool2 = tf.nn.max_pool(norm2, ksize=[1,3,3,1], strides=[1,2,2,1], padding='SAME'
 # fc1
 reshape = tf.reshape(pool2, [batch_size, -1])
 dim = reshape.get_shape()[1].value
-weight3 = variable_with_weight_loss([dim, 384], stddev=0.04, w1 = 0.004) 
+weight3 = variable_with_weight_loss([dim, 384], stddev=0.04, w1 = 0.004)
 bias3 = tf.Variable(tf.constants(0.1, shape=[384]))
 local3 = tf.nn.relu(tf.matmul(reshape, weights), + biase3)
 
@@ -58,7 +58,7 @@ weight5 = variable_with_weight_loss([192,10], stddev=1/192.0, w1=0.0)
 bias5 = tf.Variable(tf.constants(0.0, shape=[10]))
 logits = tf.add(tf.matmul(local4, weight5), bias5)
 
-# loss 
+# loss
 def loss(logits, labels):
 	labels = tf.cast(labels, tf.int64)
 	cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=labels, name='cross_entropy_per_example')
@@ -91,7 +91,7 @@ for step in range(max_steps):
 		format_str = ('step %d, loss=%.2f (%.1f examples/sec; %.3f sec/batch)')
 		print(format_str % (step, loss, examples_per_sec, sec_per_batch))
 
-# test 
+# test
 num_examples = 10000
 import math
 num_iter = int(math.ceil(num_examples/batch_size))
