@@ -50,7 +50,7 @@ def build_dataset(words):
 		data.append(index)
 	count[0][1] = unk_count
 	reverse_dictionary = dict(zip(dictionary.values(), dictionary.keys()))
-	return data, cont, dictionary, reverse_dictionary
+	return data, count, dictionary, reverse_dictionary
 
 data, count, dictionary, reverse_dictionary = build_dataset(words)
 
