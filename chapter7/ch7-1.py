@@ -59,13 +59,13 @@ print('Most common words (+UNK)', count[:5])
 print('Sample data', data[:10], [reverse_dictionary[i] for i in data[:10]])
 
 data_index = 0
-def generate_batch(batch_size, num_skip, skip_window):
+def generate_batch(batch_size, num_skips, skip_window):
 	global data_index
 	assert batch_size % num_skips == 0
 	assert num_skips <= 2 * skip_window
 	batch = np.ndarray(shape=(batch_size), dtype=np.int32)
 	labels = np.ndarray(shape=(batch_size,1), dtype=np.int32)
-	span = 2*skip_windows + 1
+	span = 2*skip_window + 1
 	buffer = collections.deque(maxlen=span)
 
 	for _ in range(span):
