@@ -102,8 +102,8 @@ with graph.as_default():
 	valid_dataset = tf.constant(valid_examples, dtype=tf.int32)
 
 	with tf.device('/cpu:0'):
-		embedding = tf.Varible(tf.random_uniform([vocabulary_size, embedding_size], -1.0, 1.0))
-		embde = tf.nn.embedding_lookup(embedding, train_inputs)
+		embeddings = tf.Variable(tf.random_uniform([vocabulary_size, embedding_size], -1.0, 1.0))
+		embed = tf.nn.embedding_lookup(embeddings, train_inputs)
 
 		nce_weights = tf.Variable(tf.truncated_normal([vocabulary_size, embedding_size], stddev=1.0/math.sqrt(embedding_size)))
 		nce_biases = tf.Variable(tf.zeros([vocabulary_size]))
@@ -123,7 +123,7 @@ with graph.as_default():
 
 	init = tf.global_variables_initializer()
 
-num_steps = 100001
+num_steps = 10001
 
 with tf.Session(graph=graph) as session:
 	init.run()
@@ -146,12 +146,30 @@ with tf.Session(graph=graph) as session:
 		if step % 10000 == 0:
 			sim = similarity.eval()
 			for i in range(valid_size):
-				valid_word = reverse_dictionary[valid_examples(i)]
+				valid_word = reverse_dictionary[valid_examples[i]]
 				top_k = 8
-				nearest = (-sim[i, :].argsort())[1:top_k+1]
+				nearest = (-sim[i, :]).argsort()[1:top_k+1]
 				log_str = "Nearest to %s:" %  valid_word
 				for k in range(top_k):
-					close_word = reverse-dictionary[nearest[k]]
+					close_word = reverse_dictionary[nearest[k]]
 					log_str = "%s %s, " % (log_str, close_word)
 				print(log_str)
 		final_embeddings = normalized_embeddings
+
+
+def plot_with_labels(low_dim_embs, labels, filename='tsne.png'):
+    assert low_dim_embs.shape[0] >= len(labels), "More labels than embeddings"
+    plt.figure(figsize=(18,18))
+    for i, label in enumerate(labels):
+        x,y = low_dim_embs[i, :]
+        plt.scatter(x,y)
+        plt.annotate(label, xy=(x,y), xytext=(5,2), textcoords='offset points', ha = 'right', va='bottom')
+    plt.savefig(filename)
+
+from sklearn.manifold import TSNE
+import matplotlib.pyplot as plt
+tsne = TSNE(perplexity=30, n_components=2, init='pca', n_iter=5000)
+plot_only = 100
+low_dim_embs = tsne.fit_transform(final_embeddings[:plot_only, :])
+labels = [reverse_dictionary[i] for i in range(plot_only)]
+plot_with_labels(low_dim_embs, labels)
